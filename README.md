@@ -1,24 +1,27 @@
 ## USAGE
 
+Simple role to run Caddy as a reverse proxy.
+
 ```yaml
   - role: roles/pludoni.caddy
-    caddyfile: "{{lookup('template', '{{playbook_dir}}/files/caddyfile.j2')}}"
+    caddy_routings:
+      - name: first_website.com
+        domains:
+          - www.first_website.com
+          - first_website.com
+          - another-alias.com
+        target: '10.10.13.2:3000'
+        letsencrypt: yes
+
 ```
 
-compile Caddy from source:
+## Update compile Caddy from source with plugins:
 
 
 ```
 cd $GOPATH/src
 go get -u github.com/mholt/caddy
 go get -u github.com/caddyserver/builds
-```
-
-## Remove sponsors
-
-```
-cd $GOPATH/src/github.com/mholt/caddy
-vim caddyhttp/httpserver/server.go
 ```
 
 ## Add Plugins:
@@ -45,4 +48,3 @@ Add in import statement after comment
 cd $GOPATH/src/github.com/mholt/caddy/caddy
 go run build.go -goos=linux -goarch=amd64
 ```
-
