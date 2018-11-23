@@ -1,0 +1,5 @@
+caddy_version: 0.11.0
+caddy_user: 'www-data'
+caddyfile: |
+  http://bms.empfehlungsbund.de {
+  }

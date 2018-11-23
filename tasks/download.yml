@@ -1,0 +1,20 @@
+- copy:
+    src: 'caddy_{{caddy_version}}_amd64'
+    dest: /usr/local/bin/caddy
+    owner: root
+    group: root
+    mode: 0755
+  when: 'ansible_architecture == "x86_64"'
+
+- copy:
+    src: 'caddy_{{caddy_version}}_386'
+    dest: /usr/local/bin/caddy
+    owner: root
+    group: root
+    mode: 0755
+  when: 'ansible_architecture == "i386"'
+
+- capabilities:
+    path: /usr/local/bin/caddy
+    capability: "cap_net_bind_service=+ep"
+    state: present

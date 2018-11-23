@@ -1,0 +1,31 @@
+- include: 'users_and_folders.yml'
+- include: 'download.yml'
+
+- capabilities:
+    path: /usr/local/bin/caddy
+    capability: "cap_net_bind_service=+ep"
+    state: present
+
+- template:
+    src: 'caddy.service'
+    dest: /etc/systemd/system/caddy.service
+    owner: root
+    group: root
+    mode: 0644
+  name: "Copy systemd config"
+
+- template:
+    src: 'caddyfile.j2'
+    dest: /etc/caddy/Caddyfile
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload caddy
+  tags: [caddy_config]
+
+- systemd:
+    daemon_reload: true
+    enabled: true
+    name: 'caddy.service'
+    state: started
+  name: "Start/reload systemd"

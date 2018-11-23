@@ -1,0 +1,22 @@
+# {{ansible_managed}}
+{% for routing in caddy_routings %}
+{{routing.domains|join(', ')}} {
+  proxy / {{routing.target}} {
+    websocket
+    transparent
+  }
+  gzip
+  {% if routing.letsencrypt %}
+    tls "admin@pludoni.de"
+  {% elif routing.ssl_key is defined %}
+    tls {{routing.ssl_crt}} {{routing.ssl_key}}
+  {% else %}
+    tls self_signed
+  {% endif %}
+  log /var/log/caddy/www.empfehlungsbund.de/access.log
+  errors /var/log/caddy/www.empfehlungsbund.de/error.log
+}
+{% endfor %}
+
+
+# vim: ft=caddyfile.jinja2

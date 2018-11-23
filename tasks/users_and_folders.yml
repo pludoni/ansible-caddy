@@ -1,0 +1,42 @@
+- user:
+    name: '{{caddy_user}}'
+    home: /var/www
+    create_home: false
+    shell: /usr/sbin/nologin
+
+- file:
+    path: /var/www
+    state: directory
+    owner: '{{caddy_user}}'
+    group: '{{caddy_user}}'
+    mode: 0555
+  name: 'mkdir /var/www'
+
+- file:
+    path: "{{item}}"
+    state: directory
+    owner: '{{caddy_user}}'
+    group: '{{caddy_user}}'
+    mode: 0755
+  name: 'mkdir {{item}}'
+  with_items:
+    - /var/log/caddy
+    - /etc/caddy
+
+- file:
+    path: "/var/log/caddy/{{item.name}}"
+    state: directory
+    owner: '{{caddy_user}}'
+    group: '{{caddy_user}}'
+    mode: 0755
+  name: 'mkdir {{item}}'
+  with_items: "{{caddy_routings}}"
+  tags: [caddy_config]
+
+- file:
+    path: /etc/ssl/caddy
+    state: directory
+    owner: root
+    group: '{{caddy_user}}'
+    mode: 0770
+  name: 'mkdir /etc/ssl/caddy'
