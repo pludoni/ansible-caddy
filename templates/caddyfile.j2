@@ -15,6 +15,21 @@
   {% endif %}
   log /var/log/caddy/www.empfehlungsbund.de/access.log
   errors /var/log/caddy/www.empfehlungsbund.de/error.log
+  timeouts {
+    read   {{routing.read_timeout|default('1m')}}
+    header {{routing.header_timeout|default('1m')}}
+    write  {{routing.write_timeout|default('1m')}}
+    idle   {{routing.idle_timeout|default('1m')}}
+  }
+  {% if block_ips is defined %}
+  ipfilter / {
+    rule block
+    ip {{block_ips|join(' ')}}
+  }
+  {% endif %}
+  {% if routing.custom_caddy is defined %}
+  {{routing.custom_caddy}}
+  {% endif %}
 }
 {% endfor %}
 
