@@ -7,14 +7,14 @@
   }
   gzip
   {% if routing.letsencrypt %}
-    tls "admin@pludoni.de"
+    tls "{{caddy_letsencrypt_email}}"
   {% elif routing.ssl_key is defined %}
     tls {{routing.ssl_crt}} {{routing.ssl_key}}
   {% else %}
     tls self_signed
   {% endif %}
-  log /var/log/caddy/www.empfehlungsbund.de/access.log
-  errors /var/log/caddy/www.empfehlungsbund.de/error.log
+  log /var/log/caddy/{{routing.name}}/access.log
+  errors /var/log/caddy/{{routing.name}}/error.log
   timeouts {
     read   {{routing.read_timeout|default('1m')}}
     header {{routing.header_timeout|default('1m')}}

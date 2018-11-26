@@ -1,5 +1,13 @@
 caddy_version: 0.11.0
 caddy_user: 'www-data'
-caddyfile: |
-  http://bms.empfehlungsbund.de {
-  }
+caddy_letsencrypt_email: 'admin@pludoni.de'
+caddy_routings: []
+# - target: 10.10.10.2:80
+#   name: example.com
+#   domains:
+#     - www.example.com
+#     - example.com
+#     - en.example.com
+#   custom_caddy: |
+#     ipfilter ...
+
