@@ -2,6 +2,8 @@ caddy_version: 0.11.0
 caddy_user: 'www-data'
 caddy_letsencrypt_email: 'admin@pludoni.de'
 caddy_routings: []
+caddy_caddyfile: '/etc/caddy/Caddyfile'
+caddy_manage_caddyfile: true
 # - target: 10.10.10.2:80
 #   name: example.com
 #   domains:
