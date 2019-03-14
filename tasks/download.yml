@@ -14,7 +14,3 @@
     mode: 0755
   when: 'ansible_architecture == "i386"'
 
-- capabilities:
-    path: /usr/local/bin/caddy
-    capability: "cap_net_bind_service=+ep"
-    state: present
