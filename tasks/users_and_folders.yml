@@ -3,6 +3,7 @@
     home: /var/www
     create_home: false
     shell: /usr/sbin/nologin
+  when: 'caddy_user != "root"'
 
 - file:
     path: /var/www

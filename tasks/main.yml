@@ -6,6 +6,7 @@
     capability: "cap_net_bind_service=+ep"
     state: present
   ignore_errors: true
+  when: 'caddy_user != "root"'
 
 - template:
     src: 'caddy.service'
