@@ -1,35 +1,40 @@
 # {{ansible_managed}}
 {% for routing in caddy_routings %}
 {{routing.domains|join(', ')}} {
+{% if routing.target is defined %}
   proxy / {{routing.target}} {
     websocket
     transparent
   }
+{% endif %}
+{% if routing.root is defined %}
+  root {{routing.root}}
+{% endif %}
   gzip
-  {% if routing.letsencrypt %}
-    tls "{{caddy_letsencrypt_email}}"
-  {% elif routing.ssl_key is defined %}
-    tls {{routing.ssl_crt}} {{routing.ssl_key}}
-  {% else %}
-    tls self_signed
-  {% endif %}
-  log /var/log/caddy/{{routing.name}}/access.log
-  errors /var/log/caddy/{{routing.name}}/error.log
+{% if routing.letsencrypt is defined and routing.letsencrypt%}
+  tls "{{caddy_letsencrypt_email}}"
+{% elif routing.ssl_key is defined %}
+  tls {{routing.ssl_crt}} {{routing.ssl_key}}
+{% else %}
+  tls self_signed
+{% endif %}
+  log {{caddy_log_dir}}/{{routing.name}}/access.log
+  errors {{caddy_log_dir}}/{{routing.name}}/error.log
   timeouts {
     read   {{routing.read_timeout|default('1m')}}
     header {{routing.header_timeout|default('1m')}}
     write  {{routing.write_timeout|default('1m')}}
     idle   {{routing.idle_timeout|default('1m')}}
   }
-  {% if block_ips is defined %}
+{% if block_ips is defined %}
   ipfilter / {
     rule block
     ip {{block_ips|join(' ')}}
   }
-  {% endif %}
-  {% if routing.custom_caddy is defined %}
+{% endif %}
+{% if routing.custom_caddy is defined %}
   {{routing.custom_caddy}}
-  {% endif %}
+{% endif %}
 }
 {% endfor %}
 

@@ -1,17 +1,17 @@
 - user:
     name: '{{caddy_user}}'
-    home: /var/www
+    home: '{{caddy_user_home}}'
     create_home: false
     shell: /usr/sbin/nologin
   when: 'caddy_user != "root"'
 
 - file:
-    path: /var/www
+    path: '{{caddy_user_home}}'
     state: directory
     owner: '{{caddy_user}}'
     group: '{{caddy_user}}'
     mode: 0555
-  name: 'mkdir /var/www'
+  name: 'mkdir caddy_user_home'
 
 - file:
     path: "{{item}}"
@@ -19,13 +19,13 @@
     owner: '{{caddy_user}}'
     group: '{{caddy_user}}'
     mode: 0755
-  name: 'mkdir {{item}}'
+  name: 'mkdir caddy_log_dir + config_dir'
   with_items:
-    - /var/log/caddy
-    - /etc/caddy
+    - '{{caddy_log_dir}}'
+    - '{{caddy_config_dir}}'
 
 - file:
-    path: "/var/log/caddy/{{item.name}}"
+    path: "{{caddy_log_dir}}/{{item.name}}"
     state: directory
     owner: '{{caddy_user}}'
     group: '{{caddy_user}}'
