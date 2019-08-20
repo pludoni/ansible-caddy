@@ -1,5 +1,14 @@
 # {{ansible_managed}}
 {% for routing in caddy_routings %}
+{% if not routing.letsencrypt is defined or not routing.letsencrypt  %}
+{{routing.domains|join(':80, ')}}:80 {
+  redir 301 {
+    if {scheme} not https
+    / https://{host}{uri}
+  }
+}
+{% endif %}
+
 {{routing.domains|join(', ')}} {
 {% if routing.target is defined %}
   proxy / {{routing.target}} {

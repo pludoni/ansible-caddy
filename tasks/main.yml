@@ -5,8 +5,7 @@
     path: /usr/local/bin/caddy
     capability: "cap_net_bind_service=+ep"
     state: present
-  ignore_errors: true
-  when: 'caddy_user != "root"'
+  when: 'caddy_use_capabilities'
 
 - template:
     src: 'caddy.service'

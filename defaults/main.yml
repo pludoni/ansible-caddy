@@ -1,5 +1,7 @@
-caddy_version: 0.11.0
-caddy_user: 'www-data'
+caddy_version: 1.0.3
+# to bind 443
+caddy_user: 'root'
+# caddy_user: 'www-data'
 caddy_letsencrypt_email: 'admin@pludoni.de'
 caddy_routings: []
 caddy_manage_caddyfile: true
@@ -8,6 +10,7 @@ caddy_config_dir: /etc/caddy
 caddy_caddyfile: '{{caddy_config_dir}}/Caddyfile'
 caddy_log_dir: /var/log/caddy
 caddy_protect_home: true
+caddy_use_capabilities: Yes
 # - target: 10.10.10.2:80
 #   name: example.com
 #   domains:

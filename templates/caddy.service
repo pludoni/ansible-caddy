@@ -1,3 +1,5 @@
+; {{ ansible_managed }}
+; Base on https://github.com/caddyserver/caddy/blob/master/dist/init/linux-systemd/caddy.service
 [Unit]
 Description=Caddy HTTP/2 web server
 Documentation=https://caddyserver.com/docs
@@ -15,7 +17,7 @@ Group={{caddy_user}}
 Environment=CADDYPATH=/etc/ssl/caddy
 
 ; Always set "-root" to something safe in case it gets forgotten in the Caddyfile.
-ExecStart=/usr/local/bin/caddy -log stdout -agree=true -conf={{caddy_caddyfile}} -root=/var/tmp
+ExecStart=/usr/local/bin/caddy -log stdout -agree=true -conf={{caddy_caddyfile}} -root=/var/tmp -port 443
 ExecReload=/bin/kill -USR1 $MAINPID
 
 ; Use graceful shutdown with a reasonable timeout
@@ -43,8 +45,10 @@ ReadWriteDirectories=/etc/ssl/caddy
 ; The following additional security directives only work with systemd v229 or later.
 ; They further restrict privileges that can be gained by caddy. Uncomment if you like.
 ; Note that you may have to add capabilities required by any plugins in use.
-;CapabilityBoundingSet=CAP_NET_BIND_SERVICE
-;AmbientCapabilities=CAP_NET_BIND_SERVICE
+{% if caddy_use_capabilities %}
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+{% endif %}
 ;NoNewPrivileges=true
 
 [Install]

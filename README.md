@@ -17,29 +17,39 @@ Simple role to run Caddy as a reverse proxy.
 
 ## Update compile Caddy from source with plugins:
 
+```
+mkdir caddy
+cd caddy
+vim main.go
+```
 
 ```
-cd $GOPATH/src
-go get -u github.com/mholt/caddy
-go get -u github.com/caddyserver/builds
+cd package main
+
+import (
+	"github.com/caddyserver/caddy/caddy/caddymain"
+
+  _ "github.com/pyed/ipfilter"
+  _ "github.com/xuqingfeng/caddy-rate-limit"
+	// plug in plugins here, for example:
+	// _ "import/path/here"
+)
+
+func main() {
+	// optional: disable telemetry
+	// caddymain.EnableTelemetry = false
+	caddymain.Run()
+}
 ```
 
-## Add Plugins:
-
 ```
-cd $GOPATH/src
+export GO111MODULE=on
+go mod init caddy
+go get github.com/caddyserver/caddy
 go get github.com/pyed/ipfilter
 go get github.com/xuqingfeng/caddy-rate-limit
-
-cd $GOPATH/src/github.com/mholt/caddy
-vim caddy/caddymain/run.go
-```
-
-Add in import statement after comment
-
-```
-"github.com/pyed/ipfilter"
-"github.com/xuqingfeng/caddy-rate-limit"
+GOOS=linux GOARCH=amd64 go build -o caddy_amd64
+GOOS=linux GOARCH=386 go build -o caddy_386
 ```
 
 ## Build
