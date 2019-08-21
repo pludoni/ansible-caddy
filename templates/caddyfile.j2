@@ -10,6 +10,14 @@
 {% endif %}
 
 {{routing.domains|join(', ')}} {
+{% if routing.redirects is defined %}
+{% for redirect in routing.redirects %}
+   redir 302 {
+        if {hostonly} is {{redirect.from}}
+        /  https://{{redirect.to}}{uri}
+  }
+{% endfor %}
+{% endif %}
 {% if routing.target is defined %}
   proxy / {{routing.target}} {
     websocket
