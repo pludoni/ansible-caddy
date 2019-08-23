@@ -27,6 +27,20 @@
 {% if routing.root is defined %}
   root {{routing.root}}
 {% endif %}
+{% if routing.php is defined %}
+  fastcgi / /run/php/php{{routing.php}}-fpm.sock php {
+		ext .php
+		split .php
+		index index.php
+  }
+  # This rewrite is to prevent access to dot files and folders such
+  # as .htaccess, .git, etc.
+	rewrite {
+		if {path} starts_with .
+		if {path} not_starts_with .well-known
+		to error/index.html
+	}
+{% endif %}
   gzip
 {% if routing.letsencrypt is defined and routing.letsencrypt%}
   tls "{{caddy_letsencrypt_email}}"

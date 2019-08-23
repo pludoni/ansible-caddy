@@ -1,17 +1,42 @@
 ## USAGE
 
-Simple role to run Caddy as a reverse proxy.
+Simple role to run and configure Caddy as a reverse proxy/static-php site (php must be installed separately).
 
 ```yaml
   - role: roles/pludoni.caddy
+    caddy_user: www-data
+    caddy_letsencrypt_email: 'admin@mydomain.de'
     caddy_routings:
       - name: first_website.com
+        # only activate letsencrypt when the domain name completely resolves to this host
+        # or set to 'no' to enable self signed certs
+        letsencrypt: yes
+        # what domains should this vhost respond to?
         domains:
           - www.first_website.com
           - first_website.com
           - another-alias.com
+        # SEO redirects
+        redirects:
+          - from: mydomain.de
+            to:  www.mydomain.de
+
+        # now, what to do with the domain?
+        # 1. reverse-Proxy to somewhere else, with all good settings, like websocket, transparency, etc.
         target: '10.10.13.2:3000'
-        letsencrypt: yes
+
+        # 2. static/php hosting?
+        root: /home/pages/www.mysite.com
+        # uses php7.2 fastcgi socket in /run/php/php-7.2-fpm.sock, must be installed separately
+        php: 7.2
+
+        # if supporting big file uploads change those
+        # NOTE: THIS MUST BE THE SAME VALUES FOR ALLE HOSTS, THE SMALLEST VALUES OF ALL HOSTS WILL WIN
+        read_timeout: 1m
+        write_timeout: 1m
+        header_timeout: 1m
+        idle_timeout: 1m
+
 
 ```
 
