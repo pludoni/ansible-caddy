@@ -1,6 +1,6 @@
 # {{ansible_managed}}
 {% for routing in caddy_routings %}
-{% if not routing.letsencrypt is defined or not routing.letsencrypt  %}
+{% if not routing.letsencrypt is defined or not routing.letsencrypt and not routing.plain_http is defined %}
 {{routing.domains|join(':80, ')}}:80 {
   redir 301 {
     if {scheme} not https
@@ -57,6 +57,9 @@
     write  {{routing.write_timeout|default('1m')}}
     idle   {{routing.idle_timeout|default('1m')}}
   }
+{% if routing.basic_auth is defined %}
+  basicauth / {{routing.basic_auth.username}} {{routing.basic_auth.password}}
+{% endif %}
 {% if block_ips is defined %}
   ipfilter / {
     rule block
