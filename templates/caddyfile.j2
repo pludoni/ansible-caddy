@@ -49,7 +49,7 @@
 {% else %}
   tls self_signed
 {% endif %}
-  log {{caddy_log_dir}}/{{routing.name}}/access.log
+  log / {{caddy_log_dir}}/{{routing.name}}/access.log "{combined}"
   errors {{caddy_log_dir}}/{{routing.name}}/error.log
   timeouts {
     read   {{routing.read_timeout|default('1m')}}
