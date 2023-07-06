@@ -1,6 +1,8 @@
 # {{ansible_managed}}
+
 {% for routing in caddy_routings %}
-{% if not routing.letsencrypt is defined or not routing.letsencrypt and not routing.plain_http is defined %}
+
+{% if not routing.letsencrypt is defined or not routing.letsencrypt and not routing.plain_http is defined -%}
 {{routing.domains|join(':80, ')}}:80 {
   redir 301 {
     if {scheme} not https
@@ -10,62 +12,82 @@
 {% endif %}
 
 {{routing.domains|join(', ')}} {
-{% if routing.redirects is defined %}
+{% if routing.redirects is defined -%}
 {% for redirect in routing.redirects %}
-   redir 302 {
+	redir 302 {
         if {hostonly} is {{redirect.from}}
         /  https://{{redirect.to}}{uri}
   }
-{% endfor %}
-{% endif %}
+{% endfor -%}
+{% endif -%}
 {% if routing.target is defined %}
-  proxy / {{routing.target}} {
-    websocket
-    transparent
+  reverse_proxy {
+    to {{routing.target}}
   }
 {% endif %}
+
 {% if routing.root is defined %}
-  root {{routing.root}}
+	root * {{routing.root}}
 {% endif %}
-{% if routing.php is defined %}
-  fastcgi / /run/php/php{{routing.php}}-fpm.sock php {
-		ext .php
+
+{%- if routing.php is defined %}
+   php_fastcgi /run/php/php{{routing.php}}-fpm.sock {
 		split .php
 		index index.php
+		ext .php
   }
+
   # This rewrite is to prevent access to dot files and folders such
   # as .htaccess, .git, etc.
-	rewrite {
-		if {path} starts_with .
-		if {path} not_starts_with .well-known
+	@startwithpoint `{path}.startsWith(".")`
+	@notstartwithwellknow `{path}.not_starts_with(".well-known")`
+	rewrite @startwithpoint{
+		to error/index.html
+	}
+	rewrite @notstartwithwellknow{
 		to error/index.html
 	}
 {% endif %}
-  gzip
-{% if routing.letsencrypt is defined and routing.letsencrypt%}
-  tls "{{caddy_letsencrypt_email}}"
+  encode gzip
+{% if routing.letsencrypt is defined and routing.letsencrypt %}
+  tls "{{caddy_letsencrypt_email}}" {
+    ca {{ caddy_tls_acme_server }}
+  }
 {% elif routing.ssl_key is defined %}
   tls {{routing.ssl_crt}} {{routing.ssl_key}}
 {% else %}
-  tls self_signed
+  tls internal
 {% endif %}
-  log / {{caddy_log_dir}}/{{routing.name}}/access.log "{combined}"
-  errors {{caddy_log_dir}}/{{routing.name}}/error.log
-  timeouts {
-    read   {{routing.read_timeout|default('1m')}}
-    header {{routing.header_timeout|default('1m')}}
-    write  {{routing.write_timeout|default('1m')}}
-    idle   {{routing.idle_timeout|default('1m')}}
+
+  log {
+    format json
+    output file {{caddy_log_dir}}/{{routing.name}}/access.log
+    level INFO
+  }
+  log {
+    format json
+    output file {{caddy_log_dir}}/{{routing.name}}/error.log
+    level ERROR
   }
 {% if routing.basic_auth is defined %}
-  basicauth / {{routing.basic_auth.username}} {{routing.basic_auth.password}}
-{% endif %}
-{% if block_ips is defined %}
-  ipfilter / {
-    rule block
-    ip {{block_ips|join(' ')}}
+  basicauth / {
+    {{routing.basic_auth.username}} {{routing.basic_auth.password_hash}}
   }
 {% endif %}
+
+{% if block_ips is defined %}
+  @denied remote_ip {{block_ips|join(' ')}}
+  handle @denied {
+      respond "Unauthorized (401)" 401                                                                                                                                                                            }
+{% endif %}
+
+{% if routing.allowed_ips is defined %}
+  @denied not remote_ip {{allowed_ips }}
+  handle @denied {
+    respond "Unauthorized (401)" 401
+  }
+{% endif %}
+
 {% if routing.custom_caddy is defined %}
   {{routing.custom_caddy}}
 {% endif %}

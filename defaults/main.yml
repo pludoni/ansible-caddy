@@ -1,4 +1,5 @@
-caddy_version: 1.0.3
+# caddy_version: 2.6.4
+caddy_download_url: "https://github.com/caddyserver/caddy/releases/download/v2.7.0-beta.2/caddy_2.7.0-beta.2_linux_amd64.tar.gz"
 # to bind 443
 caddy_user: 'root'
 # caddy_user: 'www-data'
@@ -8,6 +9,12 @@ caddy_manage_caddyfile: true
 caddy_user_home: /var/www
 caddy_config_dir: /etc/caddy
 caddy_caddyfile: '{{caddy_config_dir}}/Caddyfile'
+
+# Letsencrypt staging
+# caddy_tls_acme_server: https://acme-staging-v02.api.letsencrypt.org/directory
+# Letsencrypt production
+caddy_tls_acme_server: https://acme-v02.api.letsencrypt.org/directory
+
 caddy_log_dir: /var/log/caddy
 caddy_protect_home: true
 caddy_use_capabilities: Yes

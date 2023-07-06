@@ -5,6 +5,10 @@ Simple role to run and configure Caddy as a reverse proxy/static-php site (php m
 ```yaml
   - role: roles/pludoni.caddy
     caddy_user: www-data
+    # to install newer Caddy versions, edit download url
+    # caddy_download_url: "https://github.com/caddyserver/caddy/releases/download/v2.7.0-beta.2/caddy_2.7.0-beta.2_linux_amd64.tar.gz"
+    # To use letsencrypt staging ACME server:
+    # caddy_tls_acme_server: https://acme-staging-v02.api.letsencrypt.org/directory
     caddy_letsencrypt_email: 'admin@mydomain.de'
     caddy_routings:
       - name: first_website.com
@@ -29,6 +33,16 @@ Simple role to run and configure Caddy as a reverse proxy/static-php site (php m
         root: /home/pages/www.mysite.com
         # uses php7.2 fastcgi socket in /run/php/php-7.2-fpm.sock, must be installed separately
         php: 7.2
+
+        # to only allow access from IPs (internal services, etc.)
+        # allowed_ips: "10.0.0.0/8 123.234.123.123"
+        # block_ips: "123.123.123.123 23.23.23.23"
+
+        # basic-auth: Add http basic auth (e.g. test servers, internal servers etc.):
+        basic_auth:
+          username: 'admin'
+           # create with: caddy hash-password
+          password_hash: 'put-the-bcrypted-password-hash-here'
 
         # if supporting big file uploads change those
         # NOTE: THIS MUST BE THE SAME VALUES FOR ALLE HOSTS, THE SMALLEST VALUES OF ALL HOSTS WILL WIN

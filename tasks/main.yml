@@ -6,6 +6,7 @@
     capability: "cap_net_bind_service=+ep"
     state: present
   when: 'caddy_use_capabilities'
+  name: "Set capabilities"
 
 - template:
     src: 'caddy.service'
@@ -17,13 +18,14 @@
 
 - template:
     src: 'caddyfile.j2'
-    dest: "{{caddy_caddyfile}}"
+    dest: "{{ caddy_caddyfile }}"
     owner: root
     group: root
     mode: 0644
   notify: reload caddy
   when: 'caddy_manage_caddyfile'
   tags: [caddy_config]
+  name: "Copy caddyfile"
 
 - systemd:
     daemon_reload: true

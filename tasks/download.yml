@@ -1,16 +1,21 @@
-- copy:
-    src: 'caddy_{{caddy_version}}_amd64'
-    dest: /usr/local/bin/caddy
-    owner: root
-    group: root
-    mode: 0755
-  when: 'ansible_architecture == "x86_64"'
+- name: "Download Caddy"
+  get_url:
+    url: "{{ caddy_download_url }}"
+    dest: '/tmp/caddy.tar.gz'
 
-- copy:
-    src: 'caddy_{{caddy_version}}_386'
-    dest: /usr/local/bin/caddy
+- name: "Extract Caddy"
+  unarchive:
+    src: '/tmp/caddy.tar.gz'
+    dest: '/tmp'
+    remote_src: yes
+    creates: '/tmp/caddy'
+
+- name: "Install Caddy"
+  copy:
+    src: '/tmp/caddy'
+    dest: '/usr/local/bin/caddy'
     owner: root
     group: root
     mode: 0755
-  when: 'ansible_architecture == "i386"'
+    remote_src: yes
 
