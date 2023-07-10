@@ -75,14 +75,14 @@
   }
 {% endif %}
 
-{% if block_ips is defined %}
-  @denied remote_ip {{block_ips|join(' ')}}
+{% if routing.block_ips is defined %}
+  @denied remote_ip {{ routing.block_ips }}
   handle @denied {
       respond "Unauthorized (401)" 401                                                                                                                                                                            }
 {% endif %}
 
 {% if routing.allowed_ips is defined %}
-  @denied not remote_ip {{allowed_ips }}
+  @denied not remote_ip {{ routing.allowed_ips }}
   handle @denied {
     respond "Unauthorized (401)" 401
   }
